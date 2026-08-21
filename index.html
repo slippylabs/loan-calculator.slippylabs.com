@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan &amp; Compound Interest Calculator // loan-calculator.slippylabs.com</title>
+<meta name="description" content="Mortgage, car and personal loan payments with a full amortization schedule and extra-payment what-ifs, plus a compound growth mode. Runs entirely in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://loan-calculator.slippylabs.com/">
+<meta property="og:title" content="Loan &amp; Compound Interest Calculator // loan-calculator.slippylabs.com">
+<meta property="og:description" content="Mortgage, car and personal loan payments with a full amortization schedule and extra-payment what-ifs, plus a compound growth mode. Runs entirely in your browser.">
+<meta property="og:image" content="https://loan-calculator.slippylabs.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Loan &amp; Compound Interest Calculator // loan-calculator.slippylabs.com">
+<meta name="twitter:description" content="Mortgage, car and personal loan payments with a full amortization schedule and extra-payment what-ifs, plus a compound growth mode. Runs entirely in your browser.">
+<meta name="twitter:image" content="https://loan-calculator.slippylabs.com/og-image.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2234%22%20r%3D%2222%22%20fill%3D%22%231c8a52%22%20stroke%3D%22%2339ff8f%22%20stroke-width%3D%222%22%2F%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2216%22%20r%3D%228%22%20fill%3D%22%231c8a52%22%20stroke%3D%22%2339ff8f%22%20stroke-width%3D%222%22%2F%3E%3Ccircle%20cx%3D%2244%22%20cy%3D%2216%22%20r%3D%228%22%20fill%3D%22%231c8a52%22%20stroke%3D%22%2339ff8f%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E">
+<meta name="theme-color" content="#050b10">
+<link rel="stylesheet" href="style.css?v=1">
+<script>/* perf-lite: drop blend/blur effects on low-power devices. ?fx=lite or ?fx=full to override (persisted). */
+(function(){try{var k="slippy-fx",m=location.search.match(/[?&]fx=(lite|full)/),v=m?m[1]:localStorage.getItem(k);if(m)localStorage.setItem(k,v);if(v==="lite"||(v!=="full"&&(navigator.hardwareConcurrency||8)<=2))document.documentElement.classList.add("perf-lite");}catch(e){}})();</script>
+</head>
+<body>
+
+<div class="starfield"></div>
+<div class="scanlines"></div>
+
+<main class="page-wrap">
+  <div class="hud-panel wide">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="callsign-row">
+      <div class="toad-avatar-wrap">
+        <svg class="toad-avatar" width="46" height="46" viewBox="0 0 64 64">
+          <circle cx="32" cy="34" r="22" fill="#1c8a52" stroke="#39ff8f" stroke-width="2"/>
+          <circle cx="20" cy="16" r="8" fill="#1c8a52" stroke="#39ff8f" stroke-width="2"/>
+          <circle cx="44" cy="16" r="8" fill="#1c8a52" stroke="#39ff8f" stroke-width="2"/>
+          <circle cx="20" cy="16" r="3.5" fill="#050b10"/>
+          <circle cx="44" cy="16" r="3.5" fill="#050b10"/>
+          <ellipse cx="24" cy="32" rx="4.5" ry="5.5" fill="#050b10"/>
+          <ellipse cx="40" cy="32" rx="4.5" ry="5.5" fill="#050b10"/>
+          <circle cx="24" cy="30" r="1.4" fill="#39ff8f"/>
+          <circle cx="40" cy="30" r="1.4" fill="#39ff8f"/>
+          <path d="M22 42 Q32 48 42 42" stroke="#050b10" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="lock-reticle"></div>
+      </div>
+      <span class="callsign">Workshop Division // Tool</span>
+      <div class="nav-links">
+        <a href="https://projects.slippylabs.com/" class="logout-link">← Archive</a>
+      </div>
+    </div>
+
+    <h1>LOAN &amp; INTEREST CALCULATOR</h1>
+    <p class="subtitle">Work out the payment, then see where every pound of it actually goes. The schedule is the interesting part — early payments are almost all interest, and the tool shows exactly when that flips.</p>
+
+    <div class="filter-bar" role="tablist" aria-label="Calculator mode">
+      <button class="hud-tab active" id="tab-loan" data-panel="panel-loan">Loan</button>
+      <button class="hud-tab" id="tab-growth" data-panel="panel-growth">Savings Growth</button>
+    </div>
+
+    <section id="panel-loan">
+      <div class="field-grid">
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="principal">Amount borrowed</label>
+          <input class="tool-number-input" id="principal" type="number" value="250000"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="rate">Annual interest rate (%)</label>
+          <input class="tool-number-input" id="rate" type="number" value="5.25"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="years">Term (years)</label>
+          <input class="tool-number-input" id="years" type="number" value="25"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="frequency">Payment frequency</label>
+          <select class="tool-select" id="frequency">
+            <option value="12" selected>Monthly</option>
+            <option value="26">Every two weeks</option>
+            <option value="52">Weekly</option>
+            <option value="4">Quarterly</option>
+            <option value="1">Yearly</option>
+          </select>
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="extra">Extra per payment</label>
+          <input class="tool-number-input" id="extra" type="number" value="0"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="currency">Currency</label>
+          <select class="tool-select" id="currency">
+            <option value="GBP" selected>£ GBP</option>
+            <option value="USD">$ USD</option>
+            <option value="EUR">€ EUR</option>
+            <option value="JPY">¥ JPY</option>
+            <option value="none">No symbol</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="tool-note" id="loan-error" role="alert"></p>
+      <div class="net-grid" id="loan-summary"></div>
+      <div id="extra-effect"></div>
+
+      <div class="cert-section-label">Where the money goes</div>
+      <div class="split-bar" id="split-bar"></div>
+      <p class="tool-note" id="split-note"></p>
+
+      <div class="cert-section-label">Balance over time</div>
+      <div class="chart-frame"><canvas id="balance-chart" width="900" height="300"></canvas></div>
+      <p class="tool-note" id="chart-note"></p>
+
+      <div class="cert-section-label">Amortization schedule</div>
+      <div class="tool-controls">
+        <button class="tool-btn" id="csv-btn">Download CSV</button>
+        <label class="tool-check">
+          <input type="checkbox" id="yearly-view" checked> Show yearly totals
+        </label>
+      </div>
+      <div class="net-table-wrap"><table class="net-table" id="schedule-table"></table></div>
+      <p class="tool-note" id="schedule-note"></p>
+    </section>
+
+    <section id="panel-growth" class="hidden">
+      <div class="field-grid">
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="g-initial">Starting amount</label>
+          <input class="tool-number-input" id="g-initial" type="number" value="5000"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="g-contribution">Added each period</label>
+          <input class="tool-number-input" id="g-contribution" type="number" value="250"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="g-rate">Annual return (%)</label>
+          <input class="tool-number-input" id="g-rate" type="number" value="6"
+                 step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="g-years">Years</label>
+          <input class="tool-number-input" id="g-years" type="number" value="20"
+                 min="0" step="any" inputmode="decimal">
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="g-frequency">Contribution frequency</label>
+          <select class="tool-select" id="g-frequency">
+            <option value="12" selected>Monthly</option>
+            <option value="52">Weekly</option>
+            <option value="4">Quarterly</option>
+            <option value="1">Yearly</option>
+          </select>
+        </div>
+        <div class="tool-field-row">
+          <label class="tool-field-label" for="g-inflation">Inflation (%), for the real value</label>
+          <input class="tool-number-input" id="g-inflation" type="number" value="2.5"
+                 step="any" inputmode="decimal">
+        </div>
+      </div>
+
+      <p class="tool-note" id="growth-error" role="alert"></p>
+      <div class="net-grid" id="growth-summary"></div>
+      <div class="chart-frame"><canvas id="growth-chart" width="900" height="300"></canvas></div>
+      <p class="tool-note">
+        The real value is what the final amount would buy at today's prices. It is the number
+        that matters, and it is always a lot smaller than the headline figure.
+      </p>
+      <div class="net-table-wrap"><table class="net-table" id="growth-table"></table></div>
+    </section>
+
+    <p class="tool-note">
+      Interest is compounded once per payment at the nominal annual rate divided by the number of
+      payments a year, which is how a repayment mortgage and most consumer loans work. A 0% rate
+      is handled separately — the usual payment formula divides by zero there. Rounding is applied
+      once at the end of each period, and the final payment is trimmed so the balance lands
+      exactly on zero rather than a penny either side.
+    </p>
+
+    <div class="comm-window">
+      <div class="comm-portrait">
+        <svg width="36" height="36" viewBox="0 0 64 64">
+          <circle cx="32" cy="34" r="22" fill="#1c8a52" stroke="#39ff8f" stroke-width="2"/>
+          <circle cx="20" cy="16" r="8" fill="#1c8a52" stroke="#39ff8f" stroke-width="2"/>
+          <circle cx="44" cy="16" r="8" fill="#1c8a52" stroke="#39ff8f" stroke-width="2"/>
+          <circle cx="20" cy="16" r="3.5" fill="#050b10"/>
+          <circle cx="44" cy="16" r="3.5" fill="#050b10"/>
+          <ellipse cx="24" cy="32" rx="4.5" ry="5.5" fill="#050b10"/>
+          <ellipse cx="40" cy="32" rx="4.5" ry="5.5" fill="#050b10"/>
+          <circle cx="24" cy="30" r="1.4" fill="#39ff8f"/>
+          <circle cx="40" cy="30" r="1.4" fill="#39ff8f"/>
+          <path d="M22 42 Q32 48 42 42" stroke="#050b10" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="comm-body">
+        <div class="comm-label"><span class="dot"></span> Incoming Transmission &mdash; Slippy</div>
+        <p>&quot;The headline rate tells you very little. The schedule tells you everything.&quot;</p>
+      </div>
+    </div>
+
+    <a href="https://projects.slippylabs.com/" class="hud-btn">← Back to Archive</a>
+  </div>
+</main>
+
+<script>
+/* ---- amortization core ------------------------------------------------------
+   Everything here is ordinary money arithmetic, but the two places it goes
+   wrong are worth naming: a 0% rate divides by zero in the closed-form payment
+   formula, and rounding each period to the penny leaves the final balance off
+   by a few pence unless the last payment is trimmed. Both are handled below,
+   and verify_loan.py checks the result against numpy-financial. */
+
+function periodicRate(annualRatePercent, periodsPerYear) {
+  return (annualRatePercent / 100) / periodsPerYear;
+}
+
+/* The standard annuity payment. At a 0% rate the formula collapses to 0/0, so
+   the balance is simply split evenly across the term. */
+function paymentFor(principal, rate, periods) {
+  if (periods <= 0) return 0;
+  if (rate === 0) return principal / periods;
+  const growth = Math.pow(1 + rate, periods);
+  return principal * rate * growth / (growth - 1);
+}
+
+/* How many payments it takes to clear a balance at a given payment size. */
+function periodsFor(principal, rate, payment) {
+  if (payment <= 0) return Infinity;
+  if (rate === 0) return principal / payment;
+  if (payment <= principal * rate) return Infinity;     // never touches the principal
+  return -Math.log(1 - (principal * rate) / payment) / Math.log(1 + rate);
+}
+
+/* Rounding money to the penny has two obvious implementations and both are
+   wrong. `Math.round(value * 100) / 100` turns 74.975 into 74.97, because
+   multiplying by 100 in binary lands on 7497.4999999999991. Shifting the
+   exponent of the decimal string instead — Number(String(v) + 'e2') — fixes
+   that one but breaks 3.1149999999999998, whose shifted form is not
+   representable and snaps up to exactly 311.5, giving 3.12 where the true
+   product is below 3.115 and should give 3.11.
+
+   So the digits themselves are examined. String(v) is the shortest decimal
+   that round-trips — the same number Python's repr() prints — and rounding
+   that half-up is what a ledger does. Over a 360-payment schedule a single
+   penny in the wrong direction compounds into a balance that never reaches
+   zero. */
+function roundMoney(value) {
+  if (!Number.isFinite(value)) return value;
+  const sign = value < 0 ? -1 : 1;
+  const abs = Math.abs(value);
+  if (abs >= 1e21) return value;
+
+  let text = String(abs);
+  if (text.indexOf('e') !== -1) text = abs.toFixed(20);
+  const dot = text.indexOf('.');
+  if (dot === -1) return value;
+
+  const whole = text.slice(0, dot);
+  const fraction = text.slice(dot + 1);
+  if (fraction.length <= 2) return value;
+  // Past about 9e12 the integer part no longer multiplies exactly, so fall
+  // back rather than quietly losing a digit.
+  if (whole.length > 13) return sign * Number(abs.toFixed(2));
+
+  let cents = Number(whole) * 100 + Number(fraction.slice(0, 2).padEnd(2, '0'));
+  if (fraction.charCodeAt(2) >= 53) cents += 1;      // digit '5' or higher
+  return sign * (cents / 100);
+}
+
+/* Builds the full schedule. Each row is rounded to the penny as a real lender
+   would, and the last payment absorbs the accumulated rounding so the balance
+   ends at exactly zero. */
+function buildSchedule(options) {
+  const { principal, annualRate, years, periodsPerYear, extra } = options;
+  const rate = periodicRate(annualRate, periodsPerYear);
+  const scheduledPeriods = Math.round(years * periodsPerYear);
+  const basePayment = roundMoney(paymentFor(principal, rate, scheduledPeriods));
+  const payment = basePayment + (extra || 0);
+
+  const rows = [];
+  let balance = principal;
+  let totalInterest = 0;
+  let totalPaid = 0;
+  // A payment smaller than the interest never clears the debt; the cap stops
+  // the loop rather than pretending it terminates.
+  const cap = Math.max(scheduledPeriods * 4, scheduledPeriods + 12, 1200);
+
+  while (balance > 0 && rows.length < cap) {
+    const interest = roundMoney(balance * rate);
+    let principalPart = roundMoney(payment - interest);
+    if (principalPart <= 0 && rate > 0) {
+      return {
+        error: 'That payment does not even cover the interest, so the balance would never ' +
+               'go down. Interest alone is ' + interest.toFixed(2) + ' per period.',
+      };
+    }
+    let actualPayment = payment;
+    if (principalPart >= balance) {
+      // Final payment: pay off exactly what is left, no more.
+      principalPart = balance;
+      actualPayment = roundMoney(principalPart + interest);
+    }
+    balance = roundMoney(balance - principalPart);
+    totalInterest = roundMoney(totalInterest + interest);
+    totalPaid = roundMoney(totalPaid + actualPayment);
+    rows.push({
+      period: rows.length + 1,
+      payment: actualPayment,
+      interest,
+      principal: principalPart,
+      balance,
+      totalInterest,
+    });
+  }
+
+  return {
+    payment: basePayment,
+    actualPayment: payment,
+    rows,
+    periods: rows.length,
+    scheduledPeriods,
+    totalInterest,
+    totalPaid,
+    rate,
+    principal,
+    periodsPerYear,
+  };
+}
+
+/* Groups the schedule into years, which is the view anyone actually reads. */
+function yearlyTotals(schedule) {
+  const years = [];
+  for (const row of schedule.rows) {
+    const index = Math.floor((row.period - 1) / schedule.periodsPerYear);
+    if (!years[index]) {
+      years[index] = { year: index + 1, payment: 0, interest: 0, principal: 0, balance: 0 };
+    }
+    const year = years[index];
+    year.payment = roundMoney(year.payment + row.payment);
+    year.interest = roundMoney(year.interest + row.interest);
+    year.principal = roundMoney(year.principal + row.principal);
+    year.balance = row.balance;
+  }
+  return years;
+}
+
+/* The point where a payment starts putting more into the balance than into
+   the lender's pocket. On a long mortgage this is startlingly late. */
+function crossoverPeriod(schedule) {
+  for (const row of schedule.rows) {
+    if (row.principal > row.interest) return row.period;
+  }
+  return null;
+}
+
+function compareExtra(options) {
+  const base = buildSchedule({ ...options, extra: 0 });
+  if (base.error) return null;
+  const withExtra = buildSchedule(options);
+  if (withExtra.error) return null;
+  return {
+    base,
+    withExtra,
+    periodsSaved: base.periods - withExtra.periods,
+    interestSaved: roundMoney(base.totalInterest - withExtra.totalInterest),
+  };
+}
+
+/* --- savings growth ------------------------------------------------------- */
+
+function buildGrowth(options) {
+  const { initial, contribution, annualRate, years, periodsPerYear, inflation } = options;
+  const rate = periodicRate(annualRate, periodsPerYear);
+  const periods = Math.round(years * periodsPerYear);
+  const rows = [];
+  let balance = initial;
+  let contributed = initial;
+  let interest = 0;
+
+  for (let i = 1; i <= periods; i++) {
+    // Contribution first, then growth on the new balance — end-of-period
+    // contributions would earn one period less and give a different answer.
+    balance = roundMoney(balance + contribution);
+    contributed = roundMoney(contributed + contribution);
+    const earned = roundMoney(balance * rate);
+    interest = roundMoney(interest + earned);
+    balance = roundMoney(balance + earned);
+    rows.push({ period: i, contributed, interest, balance });
+  }
+
+  const inflationFactor = Math.pow(1 + (inflation / 100), years);
+  return {
+    rows,
+    periods,
+    final: balance,
+    contributed,
+    interest,
+    real: roundMoney(balance / inflationFactor),
+    periodsPerYear,
+  };
+}
+
+/* ==== UI ==== */
+
+const $ = (id) => document.getElementById(id);
+const SYMBOLS = { GBP: '£', USD: '$', EUR: '€', JPY: '¥', none: '' };
+
+function show(el, text) { el.textContent = text; el.style.display = text ? 'block' : 'none'; }
+
+function symbol() { return SYMBOLS[$('currency').value]; }
+
+function money(value, decimals) {
+  const places = decimals === undefined ? 2 : decimals;
+  const text = Math.abs(value).toLocaleString('en-GB', {
+    minimumFractionDigits: places, maximumFractionDigits: places,
+  });
+  return (value < 0 ? '−' : '') + symbol() + text;
+}
+
+function tile(label, value, highlight) {
+  const box = document.createElement('div');
+  box.className = 'net-tile' + (highlight ? ' highlight' : '');
+  const l = document.createElement('div');
+  l.className = 'net-tile-label';
+  l.textContent = label;
+  const v = document.createElement('div');
+  v.className = 'net-tile-value mono';
+  v.textContent = value;
+  box.append(l, v);
+  return box;
+}
+
+function periodName(perYear) {
+  return { 12: 'month', 26: 'fortnight', 52: 'week', 4: 'quarter', 1: 'year' }[perYear] || 'period';
+}
+
+function describeTerm(periods, perYear) {
+  const years = Math.floor(periods / perYear);
+  const rest = periods - years * perYear;
+  const parts = [];
+  if (years) parts.push(years + ' year' + (years === 1 ? '' : 's'));
+  if (rest) parts.push(rest + ' ' + periodName(perYear) + (rest === 1 ? '' : 's'));
+  return parts.join(', ') || '0';
+}
+
+function loanInputs() {
+  return {
+    principal: Number($('principal').value),
+    annualRate: Number($('rate').value),
+    years: Number($('years').value),
+    periodsPerYear: Number($('frequency').value),
+    extra: Number($('extra').value) || 0,
+  };
+}
+
+let lastSchedule = null;
+
+function renderLoan() {
+  const options = loanInputs();
+  const summary = $('loan-summary');
+  summary.textContent = '';
+  $('extra-effect').textContent = '';
+
+  if (!(options.principal > 0)) { show($('loan-error'), 'Enter an amount to borrow.'); return; }
+  if (!(options.years > 0)) { show($('loan-error'), 'Enter a term in years.'); return; }
+  if (options.annualRate < 0) { show($('loan-error'), 'The rate cannot be negative.'); return; }
+
+  const schedule = buildSchedule(options);
+  if (schedule.error) { show($('loan-error'), schedule.error); return; }
+  show($('loan-error'), '');
+  lastSchedule = schedule;
+
+  const perYear = options.periodsPerYear;
+  summary.append(tile('Payment per ' + periodName(perYear), money(schedule.actualPayment), true));
+  summary.append(tile('Total interest', money(schedule.totalInterest)));
+  summary.append(tile('Total repaid', money(schedule.totalPaid)));
+  summary.append(tile('Interest as a share', schedule.principal
+    ? (100 * schedule.totalInterest / schedule.principal).toFixed(1) + '% of the amount borrowed'
+    : '—'));
+  summary.append(tile('Payments', schedule.periods + '  (' +
+    describeTerm(schedule.periods, perYear) + ')'));
+  summary.append(tile('Cost per ' + symbol() + '1 borrowed',
+    schedule.principal ? (schedule.totalPaid / schedule.principal).toFixed(3) : '—'));
+
+  if (options.extra > 0) {
+    const comparison = compareExtra(options);
+    if (comparison && comparison.periodsSaved > 0) {
+      const card = document.createElement('div');
+      card.className = 'finding good';
+      const title = document.createElement('div');
+      title.className = 'finding-title';
+      title.textContent = 'Paying ' + money(options.extra) + ' extra saves ' +
+        money(comparison.interestSaved) + ' in interest';
+      card.append(title);
+      const detail = document.createElement('p');
+      detail.className = 'finding-detail';
+      detail.textContent = 'The loan clears after ' +
+        describeTerm(comparison.withExtra.periods, perYear) + ' instead of ' +
+        describeTerm(comparison.base.periods, perYear) + ' — ' +
+        describeTerm(comparison.periodsSaved, perYear) + ' earlier. ' +
+        'Every extra pound goes straight at the balance, so it stops earning the lender ' +
+        'interest for the whole remaining term.';
+      card.append(detail);
+      $('extra-effect').append(card);
+    }
+  }
+
+  renderSplit(schedule);
+  renderChart(schedule);
+  renderScheduleTable(schedule);
+}
+
+function renderSplit(schedule) {
+  const bar = $('split-bar');
+  bar.textContent = '';
+  const total = schedule.principal + schedule.totalInterest;
+  if (!total) return;
+  const principalShare = 100 * schedule.principal / total;
+
+  const principalPart = document.createElement('div');
+  principalPart.className = 'split-part principal';
+  principalPart.style.width = principalShare + '%';
+  principalPart.textContent = principalShare > 12 ? Math.round(principalShare) + '% principal' : '';
+
+  const interestPart = document.createElement('div');
+  interestPart.className = 'split-part interest';
+  interestPart.style.width = (100 - principalShare) + '%';
+  interestPart.textContent = (100 - principalShare) > 12
+    ? Math.round(100 - principalShare) + '% interest' : '';
+
+  bar.append(principalPart, interestPart);
+
+  const crossover = crossoverPeriod(schedule);
+  show($('split-note'), crossover
+    ? 'Of every payment, more goes to interest than to the balance until payment ' + crossover +
+      ' (' + describeTerm(crossover, schedule.periodsPerYear) + ' in). After that it flips.'
+    : 'Every payment puts more into the balance than into interest from the start.');
+}
+
+/* A plain 2D canvas chart — no library, and it redraws from the schedule that
+   is already in memory. */
+function renderChart(schedule) {
+  const canvas = $('balance-chart');
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+
+  const rows = schedule.rows;
+  if (!rows.length) return;
+  const padLeft = 70, padRight = 16, padTop = 14, padBottom = 28;
+  const plotWidth = width - padLeft - padRight;
+  const plotHeight = height - padTop - padBottom;
+  const maxBalance = schedule.principal;
+  const xFor = (i) => padLeft + (plotWidth * i) / (rows.length - 1 || 1);
+  const yFor = (v) => padTop + plotHeight - (plotHeight * v) / (maxBalance || 1);
+
+  ctx.strokeStyle = 'rgba(57, 255, 143, 0.18)';
+  ctx.fillStyle = '#7fa695';
+  ctx.font = '11px Consolas, monospace';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const value = (maxBalance * i) / 4;
+    const y = Math.round(yFor(value)) + 0.5;
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(width - padRight, y);
+    ctx.stroke();
+    ctx.textAlign = 'right';
+    ctx.fillText(symbol() + Math.round(value).toLocaleString('en-GB'), padLeft - 8, y + 4);
+  }
+
+  // Cumulative interest, filled, under the balance line.
+  ctx.beginPath();
+  ctx.moveTo(xFor(0), yFor(0));
+  rows.forEach((row, i) => ctx.lineTo(xFor(i), yFor(row.totalInterest)));
+  ctx.lineTo(xFor(rows.length - 1), yFor(0));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 145, 48, 0.18)';
+  ctx.fill();
+
+  ctx.beginPath();
+  rows.forEach((row, i) => {
+    const x = xFor(i), y = yFor(row.balance);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#39ff8f';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = '#7fa695';
+  ctx.textAlign = 'left';
+  ctx.fillText('0', padLeft, height - 10);
+  ctx.textAlign = 'right';
+  ctx.fillText(describeTerm(rows.length, schedule.periodsPerYear), width - padRight, height - 10);
+
+  show($('chart-note'),
+       'Green is the balance still owed. The orange area is the interest paid so far — ' +
+       'it ends at ' + money(schedule.totalInterest) + '.');
+}
+
+function renderScheduleTable(schedule) {
+  const table = $('schedule-table');
+  table.textContent = '';
+  const yearly = $('yearly-view').checked;
+  const rows = yearly ? yearlyTotals(schedule) : schedule.rows;
+  const limit = yearly ? rows.length : Math.min(rows.length, 600);
+
+  const head = table.insertRow();
+  const labels = yearly
+    ? ['Year', 'Paid', 'Interest', 'Principal', 'Balance left']
+    : [periodName(schedule.periodsPerYear).replace(/^./, (c) => c.toUpperCase()),
+       'Payment', 'Interest', 'Principal', 'Balance left'];
+  labels.forEach((label) => {
+    const th = document.createElement('th');
+    th.textContent = label;
+    head.append(th);
+  });
+
+  for (let i = 0; i < limit; i++) {
+    const row = rows[i];
+    const tr = table.insertRow();
+    tr.insertCell().textContent = String(yearly ? row.year : row.period);
+    tr.insertCell().textContent = money(row.payment);
+    const interestCell = tr.insertCell();
+    interestCell.textContent = money(row.interest);
+    interestCell.className = 'interest-cell';
+    tr.insertCell().textContent = money(row.principal);
+    tr.insertCell().textContent = money(row.balance);
+  }
+  show($('schedule-note'), !yearly && rows.length > limit
+    ? 'Showing the first ' + limit + ' of ' + rows.length + ' payments. The CSV has all of them.'
+    : '');
+}
+
+function renderGrowth() {
+  const options = {
+    initial: Number($('g-initial').value) || 0,
+    contribution: Number($('g-contribution').value) || 0,
+    annualRate: Number($('g-rate').value),
+    years: Number($('g-years').value),
+    periodsPerYear: Number($('g-frequency').value),
+    inflation: Number($('g-inflation').value) || 0,
+  };
+  const summary = $('growth-summary');
+  summary.textContent = '';
+  if (!(options.years > 0)) { show($('growth-error'), 'Enter a number of years.'); return; }
+  show($('growth-error'), '');
+
+  const growth = buildGrowth(options);
+  summary.append(tile('Final balance', money(growth.final), true));
+  summary.append(tile('You put in', money(growth.contributed)));
+  summary.append(tile('Growth earned', money(growth.interest)));
+  summary.append(tile('Worth in today’s money', money(growth.real)));
+  summary.append(tile('Growth as a share', growth.contributed
+    ? (100 * growth.interest / growth.contributed).toFixed(1) + '% of what you put in' : '—'));
+
+  const canvas = $('growth-chart');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const rows = growth.rows;
+  if (rows.length) {
+    const padLeft = 70, padRight = 16, padTop = 14, padBottom = 28;
+    const plotWidth = canvas.width - padLeft - padRight;
+    const plotHeight = canvas.height - padTop - padBottom;
+    const maxValue = Math.max(growth.final, growth.contributed) || 1;
+    const xFor = (i) => padLeft + (plotWidth * i) / (rows.length - 1 || 1);
+    const yFor = (v) => padTop + plotHeight - (plotHeight * v) / maxValue;
+
+    ctx.strokeStyle = 'rgba(57, 255, 143, 0.18)';
+    ctx.fillStyle = '#7fa695';
+    ctx.font = '11px Consolas, monospace';
+    for (let i = 0; i <= 4; i++) {
+      const value = (maxValue * i) / 4;
+      const y = Math.round(yFor(value)) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, y);
+      ctx.lineTo(canvas.width - padRight, y);
+      ctx.stroke();
+      ctx.textAlign = 'right';
+      ctx.fillText(symbol() + Math.round(value).toLocaleString('en-GB'), padLeft - 8, y + 4);
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(xFor(0), yFor(0));
+    rows.forEach((row, i) => ctx.lineTo(xFor(i), yFor(row.contributed)));
+    ctx.lineTo(xFor(rows.length - 1), yFor(0));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(127, 166, 149, 0.25)';
+    ctx.fill();
+
+    ctx.beginPath();
+    rows.forEach((row, i) => {
+      const x = xFor(i), y = yFor(row.balance);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#39ff8f';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  const table = $('growth-table');
+  table.textContent = '';
+  const head = table.insertRow();
+  ['Year', 'Put in', 'Growth earned', 'Balance'].forEach((label) => {
+    const th = document.createElement('th');
+    th.textContent = label;
+    head.append(th);
+  });
+  for (let year = 1; year * growth.periodsPerYear <= growth.rows.length; year++) {
+    const row = growth.rows[year * growth.periodsPerYear - 1];
+    const tr = table.insertRow();
+    tr.insertCell().textContent = String(year);
+    tr.insertCell().textContent = money(row.contributed);
+    tr.insertCell().textContent = money(row.interest);
+    tr.insertCell().textContent = money(row.balance);
+  }
+}
+
+function downloadCSV() {
+  if (!lastSchedule) return;
+  const lines = ['Payment,Amount,Interest,Principal,Balance'];
+  for (const row of lastSchedule.rows) {
+    lines.push([row.period, row.payment.toFixed(2), row.interest.toFixed(2),
+                row.principal.toFixed(2), row.balance.toFixed(2)].join(','));
+  }
+  const blob = new Blob([lines.join('\n') + '\n'], { type: 'text/csv;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'amortization-schedule.csv';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+function switchTab(button) {
+  document.querySelectorAll('.hud-tab').forEach((t) => t.classList.remove('active'));
+  button.classList.add('active');
+  document.querySelectorAll('main section').forEach((s) => s.classList.add('hidden'));
+  $(button.dataset.panel).classList.remove('hidden');
+}
+
+document.querySelectorAll('.hud-tab').forEach((tab) => {
+  tab.addEventListener('click', () => switchTab(tab));
+});
+
+['principal', 'rate', 'years', 'frequency', 'extra', 'currency'].forEach((id) => {
+  const el = $(id);
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => {
+    renderLoan();
+    renderGrowth();
+  });
+});
+['g-initial', 'g-contribution', 'g-rate', 'g-years', 'g-frequency', 'g-inflation']
+  .forEach((id) => {
+    const el = $(id);
+    el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', renderGrowth);
+  });
+$('yearly-view').addEventListener('change', () => renderScheduleTable(lastSchedule));
+$('csv-btn').addEventListener('click', downloadCSV);
+
+renderLoan();
+renderGrowth();
+</script>
+</body>
+</html>
